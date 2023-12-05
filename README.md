@@ -11,6 +11,8 @@ Multiply sigmas: simply multiply the sigmas by what you want.
 
 Split and concatenate sigmas: takes sigmas_1 and sigmas_2 as an input and merge them by starting with sigmas_1 until the chosen step, then the rest with sigmas_2
 
+Get sigmas as float: Just get first - last step to be able to inject noise inside a latent with noise injection nodes.
+
 The Golden Scheduler: Uses phi as the exponent. Hence the name 😊. The formula is pretty simple:
 
     (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
