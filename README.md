@@ -15,7 +15,7 @@ A few nodes to mix sigmas and a custom scheduler that uses phi
 
 **Graph sigmas**: make a graph of the sigmas.
 
-**Manual scheduler**: uses eval to create a custom schedule. The math module is fully imported. Available variables are:
+**Manual scheduler**: uses eval() to create a custom schedule. The math module is fully imported. Available variables are:
 - sigmin: sigma min
 - sigmax: sigma max
 - phi
