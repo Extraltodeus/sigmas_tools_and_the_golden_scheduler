@@ -97,6 +97,31 @@ def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
             finalValue = ((value - minIn) / (MaxIn - minIn)) * (maxOut - minOut) + minOut;
             return finalValue;
 
+class get_sigma_float:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "sigmas": ("SIGMAS", {"forceInput": True}),
+            }
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("FLOAT",)
+    CATEGORY = "sampling/custom_sampling/sigmas"
+    
+    def simple_output(self,sigmas,model):
+        sigfloat = float((sigmas[0]-sigmas[-1])/model.model.latent_format.scale_factor)
+        return (sigfloat,)
+
+def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
+            finalValue = ((value - minIn) / (MaxIn - minIn)) * (maxOut - minOut) + minOut;
+            return finalValue;
+
 class sigmas_gradual_merge:
     def __init__(self):
         pass
@@ -129,4 +154,6 @@ NODE_CLASS_MAPPINGS = {
     "Multiply sigmas": sigmas_mult,
     "Split and concatenate sigmas": sigmas_concat,
     "The Golden Scheduler": the_golden_scheduler,
+    "Get sigmas as float": get_sigma_float,
+    
 }
