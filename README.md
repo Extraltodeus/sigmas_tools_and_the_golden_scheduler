@@ -15,7 +15,7 @@ Get sigmas as float: Just get first - last step to be able to inject noise insid
 
 The Golden Scheduler: Uses phi as the exponent. Hence the name 😊. The formula is pretty simple:
 
-    (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
+    (1-x/(steps-1))**phi*(sigmax-sigmin)+sigmin for x in range(steps)
 
 **It works pretty well with dpmpp2m, euler and lms!**
 
