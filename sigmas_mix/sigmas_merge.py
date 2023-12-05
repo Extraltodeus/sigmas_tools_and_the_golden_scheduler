@@ -1,5 +1,25 @@
 import torch
 from copy import deepcopy
+
+import matplotlib.pyplot as plt
+from PIL import Image
+from io import BytesIO
+import numpy as np
+from math import *
+
+def tensor_to_graph_image(tensor):
+    plt.figure()
+    plt.plot(tensor.numpy())
+    plt.title("Graph from Tensor")
+    plt.xlabel("Index")
+    plt.ylabel("Value")
+    with BytesIO() as buf:
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        image = Image.open(buf).copy()
+    plt.close()
+    return image
+
 class sigmas_merge:
     def __init__(self):
         pass
@@ -41,6 +61,31 @@ class sigmas_mult:
     def simple_output(self, sigmas, factor):
         return (sigmas*factor,)
     
+class sigmas_to_graph:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "sigmas": ("SIGMAS", {"forceInput": True}),
+            }
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("IMAGE",)
+    CATEGORY = "sampling/custom_sampling/sigmas"
+    
+    def simple_output(self, sigmas):
+        sigmas_graph = tensor_to_graph_image(sigmas.cpu())
+        numpy_image = np.array(sigmas_graph)
+        numpy_image = numpy_image / 255.0
+        tensor_image = torch.from_numpy(numpy_image)
+        tensor_image = tensor_image.unsqueeze(0)
+        images_tensor = torch.cat([tensor_image], 0)
+        return (images_tensor,)
+
 class sigmas_concat:
     def __init__(self):
         pass
@@ -65,8 +110,7 @@ class sigmas_concat:
         if rescale_sum:
             result = result*torch.sum(result).item()/torch.sum(sigmas_1).item()
         return (result,)
-    
-    
+
 class the_golden_scheduler:
     def __init__(self):
         pass
@@ -93,6 +137,42 @@ class the_golden_scheduler:
         sigmas = torch.tensor([(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]+[0]).cuda()
         return (sigmas,)
 
+class manual_scheduler:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "custom_sigmas_manual_schedule": ("STRING", {"default": "x**pi*sigmax+(1-x)**pi*sigmin"}),
+                "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
+            }
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("SIGMAS",)
+    CATEGORY = "sampling/custom_sampling/schedulers"
+    
+    def simple_output(self,model, custom_sigmas_manual_schedule,steps):
+        s = model.model.model_sampling
+        sigmin = s.sigma(s.timestep(s.sigma_min))
+        sigmax = s.sigma(s.timestep(s.sigma_max))
+        phi = (1 + 5 ** 0.5) / 2
+        sigmas = []
+        s = steps
+        for j in range(steps):
+            x = 1-j/(s-1)
+            try:
+                f = eval(custom_sigmas_manual_schedule)
+            except:
+                print("could not evaluate {custom_sigmas_manual_schedule}")
+                f = 0
+            sigmas.append(f)
+        sigmas = torch.tensor(sigmas+[0]).cuda()
+        return (sigmas,)
+    
 def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
             finalValue = ((value - minIn) / (MaxIn - minIn)) * (maxOut - minOut) + minOut;
             return finalValue;
@@ -154,6 +234,7 @@ NODE_CLASS_MAPPINGS = {
     "Multiply sigmas": sigmas_mult,
     "Split and concatenate sigmas": sigmas_concat,
     "The Golden Scheduler": the_golden_scheduler,
+    "Manual scheduler": manual_scheduler,
     "Get sigmas as float": get_sigma_float,
-    
+    "Graph sigmas": sigmas_to_graph,
 }
