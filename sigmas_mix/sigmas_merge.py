@@ -146,7 +146,7 @@ class manual_scheduler:
         return {
             "required": {
                 "model": ("MODEL",),
-                "custom_sigmas_manual_schedule": ("STRING", {"default": "x**pi*sigmax+(1-x)**pi*sigmin"}),
+                "custom_sigmas_manual_schedule": ("STRING", {"default": "x**pi*sigmax+y**pi*sigmin"}),
                 "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
             }
         }
@@ -163,7 +163,8 @@ class manual_scheduler:
         sigmas = []
         s = steps
         for j in range(steps):
-            x = 1-j/(s-1)
+            y = j/(s-1)
+            x = 1-y
             try:
                 f = eval(custom_sigmas_manual_schedule)
             except:
