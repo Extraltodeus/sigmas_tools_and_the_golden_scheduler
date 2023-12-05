@@ -3,19 +3,19 @@ A few nodes to mix sigmas and a custom scheduler that uses phi
 
 # Nodes
 
-Merge sigmas by average: takes sigmas_1 and sigmas_2 as an input and merge them with a custom weight.
+**Merge sigmas by average**: takes sigmas_1 and sigmas_2 as an input and merge them with a custom weight.
 
-Merge sigmas gradually : takes sigmas_1 and sigmas_2 as an input and merge them by starting with sigmas_1 times the weight and sigmas_2 times 1-the weight, like if you want to start with karras and end with simple.
+**Merge sigmas gradually** : takes sigmas_1 and sigmas_2 as an input and merge them by starting with sigmas_1 times the weight and sigmas_2 times 1-the weight, like if you want to start with karras and end with simple.
 
-Multiply sigmas: simply multiply the sigmas by what you want.
+**Multiply sigmas**: simply multiply the sigmas by what you want.
 
-Split and concatenate sigmas: takes sigmas_1 and sigmas_2 as an input and merge them by starting with sigmas_1 until the chosen step, then the rest with sigmas_2
+**Split and concatenate sigmas**: takes sigmas_1 and sigmas_2 as an input and merge them by starting with sigmas_1 until the chosen step, then the rest with sigmas_2
 
-Get sigmas as float: Just get first - last step to be able to inject noise inside a latent with noise injection nodes.
+**Get sigmas as float**: Just get first - last step to be able to inject noise inside a latent with noise injection nodes.
 
-Graph sigmas: make a graph of the sigmas.
+**Graph sigmas**: make a graph of the sigmas.
 
-Manual scheduler: uses eval to create a custom schedule. The math module is fully imported. Available variables are:
+**Manual scheduler**: uses eval to create a custom schedule. The math module is fully imported. Available variables are:
 - sigmin: sigma min
 - sigmax: sigma max
 - phi
@@ -27,9 +27,13 @@ Manual scheduler: uses eval to create a custom schedule. The math module is full
 ![image](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/b1d622b8-d3c1-4823-8c1b-73216fc0ce66)
 
 
-The Golden Scheduler: Uses phi as the exponent. Hence the name 😊. The formula is pretty simple:
+**The Golden Scheduler**: Uses phi as the exponent. Hence the name 😊. The formula is pretty simple:
 
     (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
+
+or if you want to use it in the manual node:
+
+    x**phi*sigmax+(1-x)**phi*sigmin
 
 **It works pretty well with dpmpp2m, euler and lms!**
 
