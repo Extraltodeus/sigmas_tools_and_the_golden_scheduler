@@ -13,6 +13,20 @@ Split and concatenate sigmas: takes sigmas_1 and sigmas_2 as an input and merge 
 
 Get sigmas as float: Just get first - last step to be able to inject noise inside a latent with noise injection nodes.
 
+Graph sigmas: make a graph of the sigmas.
+
+Manual scheduler: uses eval to create a custom schedule. The math module is fully imported. Available variables are:
+- sigmin: sigma min
+- sigmax: sigma max
+- phi
+- pi comes from math
+- x equals 1 for the first step and 0 for the last step.
+- s or steps: total amount of steps.
+- j from 0 to total steps -1.
+
+![image](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/b1d622b8-d3c1-4823-8c1b-73216fc0ce66)
+
+
 The Golden Scheduler: Uses phi as the exponent. Hence the name 😊. The formula is pretty simple:
 
     (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
