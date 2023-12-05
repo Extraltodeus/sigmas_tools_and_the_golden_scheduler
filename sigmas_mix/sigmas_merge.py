@@ -90,7 +90,7 @@ class the_golden_scheduler:
         sigmax = s.sigma(s.timestep(s.sigma_max))
         
         phi = (1 + 5 ** 0.5) / 2
-        sigmas = torch.tensor([(1-x/(steps-1))**phi*(sigmax-sigmin)+sigmin for x in range(steps)]+[0]).cuda()
+        sigmas = torch.tensor([(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]+[0]).cuda()
         return (sigmas,)
 
 def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
