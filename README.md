@@ -15,7 +15,7 @@ The Golden Scheduler: Uses phi as the exponent. The formula is pretty simple:
 
     (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
 
-It works pretty well with dpmpp2m, euler and lms!
+**It works pretty well with dpmpp2m, euler and lms!**
 
 Here is a comparison, side by side with karras. Karras being on the right (or below depending on your screen):
 
