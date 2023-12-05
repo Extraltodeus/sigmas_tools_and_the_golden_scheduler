@@ -21,6 +21,7 @@ A few nodes to mix sigmas and a custom scheduler that uses phi, then one using e
 - phi
 - pi comes from math
 - x equals 1 for the first step and 0 for the last step.
+- y equals 0 for the first step and 1 for the last step.
 - s or steps: total amount of steps.
 - j from 0 to total steps -1.
 
