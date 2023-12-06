@@ -50,9 +50,13 @@ or if you want to use it in the manual node:
 
 **It works pretty well with dpmpp2m, euler and lms!**
 
-Here is a comparison, side by side with karras. Karras being on the right (or below depending on your screen):
+Here is a comparison, the golden scheduler:
 
-![Golden Scheduler](golden_scheduler.png) ![With Karras](with_karras.png)
+![Golden Scheduler](golden_scheduler.png)
+
+Karras:
+
+![With Karras](with_karras.png)
 
 Using pi as the exponent is nice too (default formula in the manual node):
 ![01393UI_00001_](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/e15b29b2-9c6c-43a4-b976-e46c6b86003e)
