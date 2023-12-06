@@ -25,13 +25,14 @@ A few nodes to mix sigmas and a custom scheduler that uses phi, then one using e
 - s or steps: total amount of steps.
 - j from 0 to total steps -1.
 
-This one works nicely with lms:
-
-    x**((x+1)*phi)*sigmax+y**((x+1)*phi)*sigmin
-
 And this one makes the max sigma proportional to the amount of steps, it is pretty good with dpmpp2m:
 
     max([x**phi*s/phi,sigmin])
+
+
+This one works nicely with lms, euler and dpmpp2m:
+
+    x**((x+1)*phi)*sigmax+y**((x+1)*phi)*sigmin
 
 
 Here is how the graphs look like:
