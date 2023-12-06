@@ -29,6 +29,11 @@ This one works GREAT with lms:
 
     x**((x+1)*phi)*sigmax+y**((x+1)*phi)*sigmin
 
+And this one makes the max sigma proportional to the amount of steps, it is pretty good with dpmpp2m:
+
+    max([x**phi*s/phi,sigmin])
+
+
 Here is how the graphs look like:
 
 ![image](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/b1d622b8-d3c1-4823-8c1b-73216fc0ce66)
