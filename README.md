@@ -25,7 +25,7 @@ A few nodes to mix sigmas and a custom scheduler that uses phi, then one using e
 - s or steps: total amount of steps.
 - j from 0 to total steps -1.
 
-This one works GREAT with lms:
+This one works nicely with lms:
 
     x**((x+1)*phi)*sigmax+y**((x+1)*phi)*sigmin
 
