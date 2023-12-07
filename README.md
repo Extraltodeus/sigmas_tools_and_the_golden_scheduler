@@ -60,6 +60,12 @@ Karras:
 
 ![With Karras](with_karras.png)
 
+
+Here is a mix using dpmpp3m_sde with 50% exponential, 25% simple and 25% sgm uniform:
+
+![00958UI_00001_](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/51c65822-12b8-4ef2-980c-2df792838d17)
+
+
 ![456546456465](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/f0ea29f5-f92b-4cf4-9040-0117a635df9d)
 
 ![image_grid](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/d5205921-2b24-4a5f-8f4a-32d6aa7f7430)
