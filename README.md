@@ -50,7 +50,7 @@ or if you want to use it in the manual node:
 
 **It works pretty well with dpmpp2m, euler and lms!**
 
-Here is a comparison, the golden scheduler:
+Here is a comparison, the golden scheduler,  using my model [Iris Lux](https://civitai.com/models/201287?modelVersionId=234300) :
 
 ![Golden Scheduler](golden_scheduler.png)
 
