@@ -134,7 +134,7 @@ class the_golden_scheduler:
         sigmax = s.sigma(s.timestep(s.sigma_max))
         
         phi = (1 + 5 ** 0.5) / 2
-        sigmas = torch.tensor([(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]+[0]).cuda()
+        sigmas = torch.tensor([(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]+[0])
         return (sigmas,)
 
 class manual_scheduler:
@@ -171,7 +171,7 @@ class manual_scheduler:
                 print("could not evaluate {custom_sigmas_manual_schedule}")
                 f = 0
             sigmas.append(f)
-        sigmas = torch.tensor(sigmas+[0]).cuda()
+        sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
     
 def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
@@ -226,7 +226,6 @@ class sigmas_gradual_merge:
         for idx,s in enumerate(result_sigmas):
             current_factor = remap_range_no_clamp(idx,0,len(result_sigmas)-1,proportion_1,1-proportion_1)
             result_sigmas[idx] = sigmas_1[idx]*current_factor+sigmas_2[idx]*(1-current_factor)
-        result_sigmas = result_sigmas.cuda()        
         return (result_sigmas,)
     
 NODE_CLASS_MAPPINGS = {
