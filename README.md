@@ -45,7 +45,8 @@ Here is how the graphs look like:
     (1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)
 
 Where x it the iteration variable for the steps.
-or if you want to use it in the manual node:
+
+Or if you want to use it in the manual node:
 
     x**phi*sigmax+y**phi*sigmin
 
