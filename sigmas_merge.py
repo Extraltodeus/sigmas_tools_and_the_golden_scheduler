@@ -121,6 +121,7 @@ class the_golden_scheduler:
             "required": {
                 "model": ("MODEL",),
                 "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
+                "sgm" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -128,13 +129,18 @@ class the_golden_scheduler:
     RETURN_TYPES = ("SIGMAS",)
     CATEGORY = "sampling/custom_sampling/schedulers"
     
-    def simple_output(self,model,steps):
+    def simple_output(self,model,steps,sgm):
         s = model.model.model_sampling
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
         
+        if sgm:
+            steps+=1
         phi = (1 + 5 ** 0.5) / 2
-        sigmas = torch.tensor([(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]+[0])
+        sigmas = [(1-x/(steps-1))**phi*sigmax+(x/(steps-1))**phi*sigmin for x in range(steps)]
+        if sgm:
+            sigmas = sigmas[:-1]
+        sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
 
 class manual_scheduler:
