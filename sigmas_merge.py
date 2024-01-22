@@ -154,6 +154,7 @@ class manual_scheduler:
                 "model": ("MODEL",),
                 "custom_sigmas_manual_schedule": ("STRING", {"default": "x**pi*sigmax+y**pi*sigmin"}),
                 "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
+                "sgm" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -161,7 +162,9 @@ class manual_scheduler:
     RETURN_TYPES = ("SIGMAS",)
     CATEGORY = "sampling/custom_sampling/schedulers"
     
-    def simple_output(self,model, custom_sigmas_manual_schedule,steps):
+    def simple_output(self,model, custom_sigmas_manual_schedule,steps,sgm):
+        if sgm:
+            steps+=1
         s = model.model.model_sampling
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
@@ -177,6 +180,8 @@ class manual_scheduler:
                 print("could not evaluate {custom_sigmas_manual_schedule}")
                 f = 0
             sigmas.append(f)
+        if sgm:
+            sigmas = sigmas[:-1]
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
     
