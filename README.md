@@ -30,7 +30,7 @@ And this one makes the max sigma proportional to the amount of steps, it is pret
     max([x**phi*s/phi,sigmin])
 
 
-This one works nicely with lms, euler and dpmpp2m:
+This one works nicely with lms, euler and dpmpp2m NOW ALSO WITH dpmpp2m_sde if you toggle the sgm button:
 
     x**((x+1)*phi)*sigmax+y**((x+1)*phi)*sigmin
 
