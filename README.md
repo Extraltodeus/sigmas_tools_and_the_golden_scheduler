@@ -52,6 +52,14 @@ Or if you want to use it in the manual node:
 
 **It works pretty well with dpmpp2m, euler and lms!**
 
+The karras formula can be written like this:
+
+    (sigmax ** (1 / 7) + y * (sigmin ** (1 / 7) - sigmax ** (1 / 7))) ** 7
+
+Using tau:
+
+    (sigmax ** (1 / tau) + y * (sigmin ** (1 / tau) - sigmax ** (1 / tau))) ** tau
+
 Here is a comparison, the golden scheduler,  using my model [Iris Lux](https://civitai.com/models/201287?modelVersionId=234300) :
 
 ![Golden Scheduler](golden_scheduler.png)
