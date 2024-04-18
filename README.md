@@ -24,6 +24,7 @@ A few nodes to mix sigmas and a custom scheduler that uses phi, then one using e
 - y equals 0 for the first step and 1 for the last step.
 - s or steps: total amount of steps.
 - j from 0 to total steps -1.
+- f gives a normalized from 1 to 0 curve based on a reversed Fibonacci sequence
 
 And this one makes the max sigma proportional to the amount of steps, it is pretty good with dpmpp2m:
 
@@ -67,6 +68,12 @@ Here is a comparison, the golden scheduler,  using my model [Iris Lux](https://c
 Karras:
 
 ![With Karras](with_karras.png)
+
+With a formula based on the fibonacci sequence:
+
+    (sigmax-sigmin)*f**(1/2)+sigmin
+
+![00048UI_00001_](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/0a68f046-3261-433e-abf2-44501674838d)
 
 
 Here is a mix using dpmpp3m_sde with 50% exponential, 25% simple and 25% sgm uniform:
