@@ -20,6 +20,16 @@ def tensor_to_graph_image(tensor):
     plt.close()
     return image
 
+def fibonacci_normalized_descending(n):
+    fib_sequence = [0, 1]
+    for _ in range(n):
+        if n > 1:
+            fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
+    max_value = fib_sequence[-1]
+    normalized_sequence = [x / max_value for x in fib_sequence]
+    descending_sequence = normalized_sequence[::-1]
+    return descending_sequence
+
 class sigmas_merge:
     def __init__(self):
         pass
@@ -40,7 +50,7 @@ class sigmas_merge:
     
     def simple_output(self, sigmas_1, sigmas_2, proportion_1):
         return (sigmas_1*proportion_1+sigmas_2*(1-proportion_1),)
- 
+    
 class sigmas_mult:
     def __init__(self):
         pass
@@ -50,7 +60,7 @@ class sigmas_mult:
         return {
             "required": {
                 "sigmas": ("SIGMAS", {"forceInput": True}),
-                "factor": ("FLOAT", {"default": 1, "min": 0,"max": 2,"step": 0.01})
+                "factor": ("FLOAT", {"default": 1, "min": 0,"max": 100,"step": 0.01})
             }
         }
 
@@ -70,6 +80,7 @@ class sigmas_to_graph:
         return {
             "required": {
                 "sigmas": ("SIGMAS", {"forceInput": True}),
+                "print_as_list" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -77,7 +88,12 @@ class sigmas_to_graph:
     RETURN_TYPES = ("IMAGE",)
     CATEGORY = "sampling/custom_sampling/sigmas"
     
-    def simple_output(self, sigmas):
+    def simple_output(self, sigmas,print_as_list):
+        if print_as_list:
+            print(sigmas.tolist())
+            sigmas_percentages = ((sigmas-sigmas.min())/(sigmas.max()-sigmas.min())).tolist()
+            sigmas_percentages_w_steps = [(i,round(s,4)) for i,s in enumerate(sigmas_percentages)]
+            print(sigmas_percentages_w_steps)
         sigmas_graph = tensor_to_graph_image(sigmas.cpu())
         numpy_image = np.array(sigmas_graph)
         numpy_image = numpy_image / 255.0
@@ -143,6 +159,30 @@ class the_golden_scheduler:
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
 
+class sigmas_min_max_out_node:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+            }
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("FLOAT","FLOAT",)
+    RETURN_NAMES = ("Sigmas_max","Sigmas_min",)
+    CATEGORY = "sampling/custom_sampling/sigmas"
+    
+    def simple_output(self,model):
+        s = model.model.model_sampling
+        sigmin = s.sigma(s.timestep(s.sigma_min)).item()
+        sigmax = s.sigma(s.timestep(s.sigma_max)).item()
+        return (sigmax,sigmin,)
+
+
 class manual_scheduler:
     def __init__(self):
         pass
@@ -152,7 +192,7 @@ class manual_scheduler:
         return {
             "required": {
                 "model": ("MODEL",),
-                "custom_sigmas_manual_schedule": ("STRING", {"default": "x**pi*sigmax+y**pi*sigmin"}),
+                "custom_sigmas_manual_schedule": ("STRING", {"default": "((1 - cos(2 * pi * (1-y**0.5) * 0.5)) / 2)*sigmax+((1 - cos(2 * pi * y**0.5 * 0.5)) / 2)*sigmin"}),
                 "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
                 "sgm" : ("BOOLEAN", {"default": False}),
             }
@@ -168,12 +208,14 @@ class manual_scheduler:
         s = model.model.model_sampling
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
-        phi = (1 + 5 ** 0.5) / 2
+        phi  = (1 + 5 ** 0.5) / 2
         sigmas = []
         s = steps
+        fibo = fibonacci_normalized_descending(s)
         for j in range(steps):
             y = j/(s-1)
             x = 1-y
+            f = fibo[j]
             try:
                 f = eval(custom_sigmas_manual_schedule)
             except:
@@ -248,4 +290,5 @@ NODE_CLASS_MAPPINGS = {
     "Manual scheduler": manual_scheduler,
     "Get sigmas as float": get_sigma_float,
     "Graph sigmas": sigmas_to_graph,
+    "Output min/max sigmas": sigmas_min_max_out_node,
 }
