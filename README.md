@@ -61,6 +61,21 @@ Using tau:
 
     (sigmax ** (1 / tau) + y * (sigmin ** (1 / tau) - sigmax ** (1 / tau))) ** tau
 
+
+
+With a formula based on the fibonacci sequence:
+
+    (sigmax-sigmin)*f**(1/2)+sigmin
+
+More steps means a steeper curve.
+
+![output](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/7c302827-c882-4193-8a7f-998b614700e0)
+
+Example with this formula:
+
+![00048UI_00001_](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/0a68f046-3261-433e-abf2-44501674838d)
+
+
 Here is a comparison, the golden scheduler,  using my model [Iris Lux](https://civitai.com/models/201287?modelVersionId=234300) :
 
 ![Golden Scheduler](golden_scheduler.png)
@@ -68,12 +83,6 @@ Here is a comparison, the golden scheduler,  using my model [Iris Lux](https://c
 Karras:
 
 ![With Karras](with_karras.png)
-
-With a formula based on the fibonacci sequence:
-
-    (sigmax-sigmin)*f**(1/2)+sigmin
-
-![00048UI_00001_](https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler/assets/15731540/0a68f046-3261-433e-abf2-44501674838d)
 
 
 Here is a mix using dpmpp3m_sde with 50% exponential, 25% simple and 25% sgm uniform:
