@@ -187,6 +187,7 @@ class aligned_scheduler:
                 "steps": ("INT", {"default": 10, "min": 1,"max": 10000,"step": 1}),
                 # "scheduler": (comfy.samplers.SCHEDULER_NAMES, {"default":"simple"}),
                 "model_type": (["SD1", "SDXL", "SVD"], ),
+                "force_sigma_min" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -194,16 +195,16 @@ class aligned_scheduler:
     RETURN_TYPES = ("SIGMAS",)
     CATEGORY = "sampling/custom_sampling/schedulers"
     
-    def simple_output(self, model, steps, model_type):
+    def simple_output(self, model, steps, model_type, force_sigma_min):
         timestep_indices = {"SD1":[999, 850, 736, 645, 545, 455, 343, 233, 124, 24, 0],
                             "SDXL":[999, 845, 730, 587, 443, 310, 193, 116, 53, 13, 0],
                             "SVD":[995, 920, 811, 686, 555, 418, 315, 174, 109, 12, 0],}
         indices = timestep_indices[model_type]
         indices = [999 - i for i in indices]
         sigmas  = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), "simple", 1000)[indices]
-        sigmas  = loglinear_interp(sigmas.tolist(), steps + 1)
+        sigmas  = loglinear_interp(sigmas.tolist(), steps + 1 if not force_sigma_min else steps)
         sigmas  = torch.tensor(sigmas)
-        sigmas  = torch.cat([sigmas[:-1], torch.tensor([0.])])
+        sigmas  = torch.cat([sigmas[:-1] if not force_sigma_min else sigmas, torch.tensor([0.])])
         return (sigmas.cpu(),)
     
 class sigmas_min_max_out_node:
