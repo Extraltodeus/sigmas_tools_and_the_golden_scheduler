@@ -15,7 +15,7 @@ A few nodes to mix sigmas and a custom scheduler that uses phi, then one using e
 
 **Graph sigmas**: make a graph of the sigmas.
 
-**Aligned scheduler**: selects the steps from [align your steps](https://research.nvidia.com/labs/toronto-ai/AlignYourSteps/howto.html) but for any given scheduler. I have no idea if this is a good thing or not to use different scheduler with this. Simple scheduler / 10 steps will give the same values as Comfy's implementation.
+**Aligned scheduler**: selects the steps from [align your steps](https://research.nvidia.com/labs/toronto-ai/AlignYourSteps/howto.html) but for any given scheduler. I have no idea if this is good to use different scheduler with this. Simple scheduler / 10 steps will give the same values as Comfy's implementation.
 
 **Manual scheduler**: uses eval() to create a custom schedule. The math module is fully imported. Available variables are:
 - sigmin: sigma min
