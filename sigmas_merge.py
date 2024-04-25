@@ -7,10 +7,24 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 from math import *
+import comfy.samplers
+
+def loglinear_interp(t_steps, num_steps):
+    """
+    Performs log-linear interpolation of a given array of decreasing numbers.
+    """
+    xs = np.linspace(0, 1, len(t_steps))
+    ys = np.log(t_steps[::-1])
+
+    new_xs = np.linspace(0, 1, num_steps)
+    new_ys = np.interp(new_xs, xs, ys)
+
+    interped_ys = np.exp(new_ys)[::-1].copy()
+    return interped_ys
 
 def tensor_to_graph_image(tensor):
     plt.figure()
-    plt.plot(tensor.numpy())
+    plt.plot(tensor.numpy(), marker='o', linestyle='-', color='blue')
     plt.title("Graph from Tensor")
     plt.xlabel("Index")
     plt.ylabel("Value")
@@ -114,7 +128,7 @@ class sigmas_concat:
                 "sigmas_1": ("SIGMAS", {"forceInput": True}),
                 "sigmas_2": ("SIGMAS", {"forceInput": True}),
                 "sigmas_1_until": ("INT", {"default": 10, "min": 0,"max": 1000,"step": 1}),
-                "rescale_sum" : ("BOOLEAN", {"default": True}),
+                "rescale_sum" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -160,6 +174,38 @@ class the_golden_scheduler:
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
 
+
+class aligned_scheduler:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "steps": ("INT", {"default": 10, "min": 1,"max": 10000,"step": 1}),
+                "scheduler": (comfy.samplers.SCHEDULER_NAMES, {"default":"simple"}),
+                "model_type": (["SD1", "SDXL", "SVD"], ),
+            }
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("SIGMAS",)
+    CATEGORY = "sampling/custom_sampling/schedulers"
+    
+    def simple_output(self, model, steps, scheduler, model_type):
+        timestep_indices = {"SD1":[999, 850, 736, 645, 545, 455, 343, 233, 124, 24, 0],
+                            "SDXL":[999, 845, 730, 587, 443, 310, 193, 116, 53, 13, 0],
+                            "SVD":[995, 920, 811, 686, 555, 418, 315, 174, 109, 12, 0],}
+        indices = timestep_indices[model_type]
+        indices = [999 - i for i in indices]
+        sigmas  = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), scheduler, 1000)[indices]
+        sigmas  = loglinear_interp(sigmas.tolist(), steps + 1)
+        sigmas  = torch.tensor(sigmas)
+        sigmas  = torch.cat([sigmas[:-1], torch.tensor([0.])])
+        return (sigmas.cpu(),)
+    
 class sigmas_min_max_out_node:
     def __init__(self):
         pass
@@ -281,13 +327,38 @@ class sigmas_gradual_merge:
             current_factor = remap_range_no_clamp(idx,0,len(result_sigmas)-1,proportion_1,1-proportion_1)
             result_sigmas[idx] = sigmas_1[idx]*current_factor+sigmas_2[idx]*(1-current_factor)
         return (result_sigmas,)
+
+class multi_sigmas_average:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        sigmas_inputs = {f"sigmas_{X+2}": ("SIGMAS", {"forceInput": True}) for X in range(24)}
+        return {
+            "required": {
+                "sigmas_1": ("SIGMAS", {"forceInput": True}),
+            },
+            "optional": sigmas_inputs
+        }
+
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("SIGMAS",)
+    CATEGORY = "sampling/custom_sampling/sigmas"
+    
+    def simple_output(self,sigmas_1,**kwargs):
+        tensors = [sigmas_1] + [v for k, v in kwargs.items() if k.startswith('sigmas_')]
+        result_sigmas = torch.mean(torch.stack(tensors), dim=0)
+        return (result_sigmas,)
     
 NODE_CLASS_MAPPINGS = {
     "Merge sigmas by average": sigmas_merge,
     "Merge sigmas gradually": sigmas_gradual_merge,
+    "Merge many sigmas by average": multi_sigmas_average,
     "Multiply sigmas": sigmas_mult,
     "Split and concatenate sigmas": sigmas_concat,
     "The Golden Scheduler": the_golden_scheduler,
+    "Aligned Scheduler": aligned_scheduler,
     "Manual scheduler": manual_scheduler,
     "Get sigmas as float": get_sigma_float,
     "Graph sigmas": sigmas_to_graph,
