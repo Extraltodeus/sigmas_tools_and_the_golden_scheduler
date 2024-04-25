@@ -358,7 +358,7 @@ NODE_CLASS_MAPPINGS = {
     "Multiply sigmas": sigmas_mult,
     "Split and concatenate sigmas": sigmas_concat,
     "The Golden Scheduler": the_golden_scheduler,
-    "Aligned Scheduler": aligned_scheduler,
+    # "Aligned Scheduler": aligned_scheduler, this was a bad idea
     "Manual scheduler": manual_scheduler,
     "Get sigmas as float": get_sigma_float,
     "Graph sigmas": sigmas_to_graph,
