@@ -203,8 +203,8 @@ class aligned_scheduler:
         indices = [999 - i for i in indices]
         sigmas  = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), "simple", 1000)[indices]
         sigmas  = loglinear_interp(sigmas.tolist(), steps + 1 if not force_sigma_min else steps)
-        sigmas  = torch.tensor(sigmas)
-        sigmas  = torch.cat([sigmas[:-1] if not force_sigma_min else sigmas, torch.tensor([0.])])
+        sigmas  = torch.FloatTensor(sigmas)
+        sigmas  = torch.cat([sigmas[:-1] if not force_sigma_min else sigmas, torch.FloatTensor([0.])])
         return (sigmas.cpu(),)
     
 class sigmas_min_max_out_node:
