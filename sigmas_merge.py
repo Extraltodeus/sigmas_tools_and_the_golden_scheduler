@@ -161,7 +161,7 @@ class the_golden_scheduler:
     CATEGORY = "sampling/custom_sampling/schedulers"
     
     def simple_output(self,model,steps,sgm):
-        s = model.model.model_sampling
+        s = model.get_model_object("model_sampling")
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
         
@@ -203,8 +203,8 @@ class aligned_scheduler:
         indices = [999 - i for i in indices]
         sigmas  = comfy.samplers.calculate_sigmas(model.get_model_object("model_sampling"), "simple", 1000)[indices]
         sigmas  = loglinear_interp(sigmas.tolist(), steps + 1 if not force_sigma_min else steps)
-        sigmas  = torch.tensor(sigmas)
-        sigmas  = torch.cat([sigmas[:-1] if not force_sigma_min else sigmas, torch.tensor([0.])])
+        sigmas  = torch.FloatTensor(sigmas)
+        sigmas  = torch.cat([sigmas[:-1] if not force_sigma_min else sigmas, torch.FloatTensor([0.])])
         return (sigmas.cpu(),)
     
 class sigmas_min_max_out_node:
@@ -225,7 +225,7 @@ class sigmas_min_max_out_node:
     CATEGORY = "sampling/custom_sampling/sigmas"
     
     def simple_output(self,model):
-        s = model.model.model_sampling
+        s = model.get_model_object("model_sampling")
         sigmin = s.sigma(s.timestep(s.sigma_min)).item()
         sigmax = s.sigma(s.timestep(s.sigma_max)).item()
         return (sigmax,sigmin,)
@@ -253,7 +253,7 @@ class manual_scheduler:
     def simple_output(self,model, custom_sigmas_manual_schedule,steps,sgm):
         if sgm:
             steps+=1
-        s = model.model.model_sampling
+        s = model.get_model_object("model_sampling")
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
         phi  = (1 + 5 ** 0.5) / 2
