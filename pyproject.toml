@@ -1,0 +1,14 @@
+[project]
+name = "sigmas_tools_and_the_golden_scheduler"
+description = "A few nodes to mix sigmas and a custom scheduler that uses phi, then one using eval() to be able to schedule with custom formulas."
+version = "1.0.0"
+license = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/Extraltodeus/sigmas_tools_and_the_golden_scheduler"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "sigmas_tools_and_the_golden_scheduler"
+Icon = ""
