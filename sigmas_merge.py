@@ -8,6 +8,7 @@ from io import BytesIO
 import numpy as np
 from math import *
 import comfy.samplers
+from scipy.stats import norm
 
 def loglinear_interp(t_steps, num_steps):
     """
@@ -174,7 +175,37 @@ class the_golden_scheduler:
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
 
+class GaussianTailScheduler:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model": ("MODEL",),
+                "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
+                "sgm" : ("BOOLEAN", {"default": False}),
+            }
+        }
 
+    FUNCTION = "simple_output"
+    RETURN_TYPES = ("SIGMAS",)
+    CATEGORY = "sampling/custom_sampling/schedulers"
+    
+    def simple_output(self,model,steps,sgm):
+        s = model.model.model_sampling
+        sigmin = s.sigma(s.timestep(s.sigma_min))
+        sigmax = s.sigma(s.timestep(s.sigma_max))
+        
+        if sgm:
+            steps+=1
+        sigmas = [(sigmax-sigmin) * 2 * (1 - norm.cdf((x/(steps-1))*3)) + sigmin for x in range(steps)]
+        if sgm:
+            sigmas = sigmas[:-1]
+        sigmas = torch.tensor(sigmas+[0])
+        return (sigmas,)
+    
 class aligned_scheduler:
     def __init__(self):
         pass
@@ -359,6 +390,7 @@ NODE_CLASS_MAPPINGS = {
     "Multiply sigmas": sigmas_mult,
     "Split and concatenate sigmas": sigmas_concat,
     "The Golden Scheduler": the_golden_scheduler,
+    "Gaussian Tail Scheduler": GaussianTailScheduler,
     "Aligned Scheduler": aligned_scheduler,
     "Manual scheduler": manual_scheduler,
     "Get sigmas as float": get_sigma_float,
