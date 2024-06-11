@@ -185,7 +185,6 @@ class GaussianTailScheduler:
             "required": {
                 "model": ("MODEL",),
                 "steps": ("INT", {"default": 20, "min": 0,"max": 100000,"step": 1}),
-                "sgm" : ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -193,16 +192,11 @@ class GaussianTailScheduler:
     RETURN_TYPES = ("SIGMAS",)
     CATEGORY = "sampling/custom_sampling/schedulers"
     
-    def simple_output(self,model,steps,sgm):
+    def simple_output(self,model,steps):
         s = model.model.model_sampling
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
-        
-        if sgm:
-            steps+=1
         sigmas = [(sigmax-sigmin) * 2 * (1 - norm.cdf((x/(steps-1))*3)) + sigmin for x in range(steps)]
-        if sgm:
-            sigmas = sigmas[:-1]
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
     
