@@ -196,7 +196,7 @@ class GaussianTailScheduler:
         s = model.model.model_sampling
         sigmin = s.sigma(s.timestep(s.sigma_min))
         sigmax = s.sigma(s.timestep(s.sigma_max))
-        sigmas = [(sigmax-sigmin) * 2 * (1 - norm.cdf((x/(steps-1))*3)) + sigmin for x in range(steps)]
+        sigmas = [(sigmax-sigmin) * 2 * (1 - norm.cdf((x/(steps-1))*3.2905)) + sigmin for x in range(steps)]
         sigmas = torch.tensor(sigmas+[0])
         return (sigmas,)
     
