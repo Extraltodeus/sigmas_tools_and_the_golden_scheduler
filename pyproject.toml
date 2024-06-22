@@ -9,6 +9,6 @@ Repository = "https://github.com/Extraltodeus/sigmas_tools_and_the_golden_schedu
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "extraltodeus"
 DisplayName = "sigmas_tools_and_the_golden_scheduler"
 Icon = ""
