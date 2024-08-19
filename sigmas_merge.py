@@ -23,9 +23,9 @@ def loglinear_interp(t_steps, num_steps):
     interped_ys = np.exp(new_ys)[::-1].copy()
     return interped_ys
 
-def tensor_to_graph_image(tensor):
+def tensor_to_graph_image(tensor, color="blue"):
     plt.figure()
-    plt.plot(tensor.numpy(), marker='o', linestyle='-', color='blue')
+    plt.plot(tensor.numpy(), marker='o', linestyle='-', color=color)
     plt.title("Graph from Tensor")
     plt.xlabel("Index")
     plt.ylabel("Value")
@@ -93,9 +93,19 @@ class sigmas_to_graph:
     
     @classmethod
     def INPUT_TYPES(s):
+    
+        # quick list from comfyroll studio https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes/blob/main/nodes/nodes_graphics_filter.py
+        # that also appears to be based on the Color Tint node by hnmr293
+        # trimmed of incompatible colors
+        col = ["black", "red", "green", "blue",
+            "cyan", "magenta", "yellow", "purple",
+            "lime", "navy", "teal", "orange",
+            "maroon", "lavender", "olive"]
+    
         return {
             "required": {
                 "sigmas": ("SIGMAS", {"forceInput": True}),
+                "color": (col, {"default": "blue"}),
                 "print_as_list" : ("BOOLEAN", {"default": False}),
             }
         }
@@ -104,13 +114,13 @@ class sigmas_to_graph:
     RETURN_TYPES = ("IMAGE",)
     CATEGORY = "sampling/custom_sampling/sigmas"
     
-    def simple_output(self, sigmas,print_as_list):
+    def simple_output(self, sigmas, color, print_as_list):
         if print_as_list:
             print(sigmas.tolist())
             sigmas_percentages = ((sigmas-sigmas.min())/(sigmas.max()-sigmas.min())).tolist()
             sigmas_percentages_w_steps = [(i,round(s,4)) for i,s in enumerate(sigmas_percentages)]
             print(sigmas_percentages_w_steps)
-        sigmas_graph = tensor_to_graph_image(sigmas.cpu())
+        sigmas_graph = tensor_to_graph_image(sigmas.cpu(), color=color)
         numpy_image = np.array(sigmas_graph)
         numpy_image = numpy_image / 255.0
         tensor_image = torch.from_numpy(numpy_image)
