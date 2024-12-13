@@ -1,3 +1,5 @@
+import enum
+import matplotlib.scale
 import torch
 from copy import deepcopy
 import matplotlib
@@ -23,12 +25,23 @@ def loglinear_interp(t_steps, num_steps):
     interped_ys = np.exp(new_ys)[::-1].copy()
     return interped_ys
 
-def tensor_to_graph_image(tensor, color="blue"):
+
+class GraphScale(enum.StrEnum):
+    linear = "linear"
+    log = "log"
+
+
+def tensor_to_graph_image(tensor, color="blue", scale: GraphScale=GraphScale.linear):
+    SCALE_FUNCTIONS: dict[str, matplotlib.scale.ScaleBase] = {
+        GraphScale.linear: matplotlib.scale.LinearScale,
+        GraphScale.log: matplotlib.scale.LogScale,
+    }
     plt.figure()
     plt.plot(tensor.numpy(), marker='o', linestyle='-', color=color)
     plt.title("Graph from Tensor")
     plt.xlabel("Index")
     plt.ylabel("Value")
+    plt.yscale(scale)
     with BytesIO() as buf:
         plt.savefig(buf, format='png')
         buf.seek(0)
@@ -101,12 +114,15 @@ class sigmas_to_graph:
             "cyan", "magenta", "yellow", "purple",
             "lime", "navy", "teal", "orange",
             "maroon", "lavender", "olive"]
+        
+        scale_options = [option.value for option in GraphScale]
     
         return {
             "required": {
                 "sigmas": ("SIGMAS", {"forceInput": True}),
                 "color": (col, {"default": "blue"}),
                 "print_as_list" : ("BOOLEAN", {"default": False}),
+                "scale": (scale_options, {"default": GraphScale.linear})
             }
         }
 
@@ -114,13 +130,13 @@ class sigmas_to_graph:
     RETURN_TYPES = ("IMAGE",)
     CATEGORY = "sampling/custom_sampling/sigmas"
     
-    def simple_output(self, sigmas, color, print_as_list):
+    def simple_output(self, sigmas, color, print_as_list, scale: GraphScale):
         if print_as_list:
             print(sigmas.tolist())
             sigmas_percentages = ((sigmas-sigmas.min())/(sigmas.max()-sigmas.min())).tolist()
             sigmas_percentages_w_steps = [(i,round(s,4)) for i,s in enumerate(sigmas_percentages)]
             print(sigmas_percentages_w_steps)
-        sigmas_graph = tensor_to_graph_image(sigmas.cpu(), color=color)
+        sigmas_graph = tensor_to_graph_image(sigmas.cpu(), color=color, scale=scale)
         numpy_image = np.array(sigmas_graph)
         numpy_image = numpy_image / 255.0
         tensor_image = torch.from_numpy(numpy_image)
