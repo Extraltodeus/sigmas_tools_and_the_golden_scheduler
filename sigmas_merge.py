@@ -37,16 +37,12 @@ class GraphScale(enum.StrEnum):
 
 
 def tensor_to_graph_image(tensor, color="blue", scale: GraphScale = GraphScale.linear):
-    SCALE_FUNCTIONS: dict[str, matplotlib.scale.ScaleBase] = {
-        GraphScale.linear: matplotlib.scale.LinearScale,
-        GraphScale.log: matplotlib.scale.LogScale,
-    }
     plt.figure()
     plt.plot(tensor.numpy(), marker="o", linestyle="-", color=color)
     plt.title("Graph from Tensor")
     plt.xlabel("Index")
     plt.ylabel("Value")
-    plt.yscale(scale)
+    plt.yscale(str(scale))  # <-- Fix here
     with BytesIO() as buf:
         plt.savefig(buf, format="png")
         buf.seek(0)
