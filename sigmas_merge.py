@@ -429,9 +429,12 @@ class get_sigma_float:
     CATEGORY = "sampling/custom_sampling/sigmas"
 
     def simple_output(self, sigmas, model):
-        sigfloat = float(
-            (sigmas[0] - sigmas[-1]) / model.model.latent_format.scale_factor
-        )
+        scale_factor = getattr(model.model.latent_format, "scale_factor", None)
+        if scale_factor is None or scale_factor == 0:
+            print("Warning: scale_factor is zero or not set. Returning 0.")
+            sigfloat = 0.0
+        else:
+            sigfloat = float((sigmas[0] - sigmas[-1]) / scale_factor)
         return (sigfloat,)
 
 
