@@ -56,9 +56,13 @@ def tensor_to_graph_image(tensor, color="blue", scale: GraphScale = GraphScale.l
 
 
 def fibonacci_normalized_descending(n):
-    fib_sequence = [0, 1]
-    for _ in range(n):
-        if n > 1:
+    if n <= 0:
+        return []
+    if n == 1:
+        fib_sequence = [1]
+    else:
+        fib_sequence = [1, 1]
+        for _ in range(2, n):
             fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
     max_value = fib_sequence[-1]
     normalized_sequence = [x / max_value for x in fib_sequence]
