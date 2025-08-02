@@ -381,7 +381,6 @@ class manual_scheduler:
         sigmas = []
         s = steps
         fibo = fibonacci_normalized_descending(s)
-        # Prepare asteval with math functions and variables
         aeval = Interpreter()
         aeval.symtable.update(
             {
@@ -395,6 +394,7 @@ class manual_scheduler:
                 # add other math functions as needed
             }
         )
+        error_occurred = False
         for j in range(steps):
             y = j / (s - 1)
             x = 1 - y
@@ -403,9 +403,15 @@ class manual_scheduler:
             try:
                 f = aeval(custom_sigmas_manual_schedule)
             except Exception as e:
-                print(f"Could not evaluate '{custom_sigmas_manual_schedule}': {e}")
-                f = 0
+                print(
+                    f"[manual_scheduler] Error evaluating '{custom_sigmas_manual_schedule}' at step {j}: {e}"
+                )
+                error_occurred = True
+                break
             sigmas.append(f)
+        if error_occurred:
+            # Return a tensor of NaNs to indicate failure
+            sigmas = [float("nan")] * steps
         if sgm:
             sigmas = sigmas[:-1]
         sigmas = torch.tensor(sigmas + [0])
