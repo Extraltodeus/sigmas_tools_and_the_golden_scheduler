@@ -1,5 +1,4 @@
 import enum
-from copy import deepcopy
 
 import matplotlib
 import torch
@@ -474,7 +473,7 @@ class sigmas_gradual_merge:
     CATEGORY = "sampling/custom_sampling/sigmas"
 
     def simple_output(self, sigmas_1, sigmas_2, proportion_1):
-        result_sigmas = deepcopy(sigmas_1)
+        result_sigmas = sigmas_1.clone()
         for idx, s in enumerate(result_sigmas):
             current_factor = remap_range_no_clamp(
                 idx, 0, len(result_sigmas) - 1, proportion_1, 1 - proportion_1
