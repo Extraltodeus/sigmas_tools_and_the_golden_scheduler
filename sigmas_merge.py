@@ -144,7 +144,10 @@ class sigmas_to_graph:
                 "sigmas": ("SIGMAS", {"forceInput": True}),
                 "color": (col, {"default": "blue"}),
                 "print_as_list": ("BOOLEAN", {"default": False}),
-                "scale": (scale_options, {"default": GraphScale.linear}),
+                "scale": (
+                    scale_options,
+                    {"default": GraphScale.linear.value},
+                ),
             }
         }
 
