@@ -2,7 +2,6 @@ import enum
 from copy import deepcopy
 
 import matplotlib
-import matplotlib.scale
 import torch
 from asteval import Interpreter
 
