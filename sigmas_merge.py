@@ -435,11 +435,6 @@ class get_sigma_float:
         return (sigfloat,)
 
 
-def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
-    finalValue = ((value - minIn) / (MaxIn - minIn)) * (maxOut - minOut) + minOut
-    return finalValue
-
-
 class sigmas_gradual_merge:
     def __init__(self):
         pass
