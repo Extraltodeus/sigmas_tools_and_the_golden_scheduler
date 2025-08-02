@@ -71,7 +71,7 @@ class sigmas_merge:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "sigmas_1": ("SIGMAS", {"forceInput": True}),
@@ -96,7 +96,7 @@ class sigmas_mult:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "sigmas": ("SIGMAS", {"forceInput": True}),
@@ -117,7 +117,7 @@ class sigmas_to_graph:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         # quick list from comfyroll studio https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes/blob/main/nodes/nodes_graphics_filter.py
         # that also appears to be based on the Color Tint node by hnmr293
         # trimmed of incompatible colors
@@ -185,7 +185,7 @@ class sigmas_concat:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "sigmas_1": ("SIGMAS", {"forceInput": True}),
@@ -214,7 +214,7 @@ class the_golden_scheduler:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -250,7 +250,7 @@ class GaussianTailScheduler:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -279,7 +279,7 @@ class aligned_scheduler:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -320,7 +320,7 @@ class sigmas_min_max_out_node:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -353,7 +353,7 @@ class manual_scheduler:
         self.asteval = Interpreter()
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -423,7 +423,7 @@ class get_sigma_float:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "model": ("MODEL",),
@@ -450,7 +450,7 @@ class sigmas_gradual_merge:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "sigmas_1": ("SIGMAS", {"forceInput": True}),
@@ -483,7 +483,7 @@ class multi_sigmas_average:
         pass
 
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         sigmas_inputs = {
             f"sigmas_{X + 2}": ("SIGMAS", {"forceInput": True}) for X in range(24)
         }
