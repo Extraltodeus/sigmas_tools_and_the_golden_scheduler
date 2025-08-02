@@ -242,7 +242,12 @@ class the_golden_scheduler:
         ]
         if sgm:
             sigmas = sigmas[:-1]
-        sigmas = torch.tensor(sigmas + [0])
+        device = getattr(
+            model,
+            "device",
+            torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        )
+        sigmas = torch.tensor(sigmas + [0], device=device)
         return (sigmas,)
 
 
@@ -271,7 +276,12 @@ class GaussianTailScheduler:
             (sigmax - sigmin) * 2 * (1 - norm.cdf((x / (steps - 1)) * 3.2905)) + sigmin
             for x in range(steps)
         ]
-        sigmas = torch.tensor(sigmas + [0])
+        device = getattr(
+            model,
+            "device",
+            torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        )
+        sigmas = torch.tensor(sigmas + [0], device=device)
         return (sigmas,)
 
 
@@ -309,9 +319,17 @@ class aligned_scheduler:
         sigmas = loglinear_interp(
             sigmas.tolist(), steps + 1 if not force_sigma_min else steps
         )
-        sigmas = torch.FloatTensor(sigmas)
+        device = getattr(
+            model,
+            "device",
+            torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        )
+        sigmas = torch.FloatTensor(sigmas).to(device)
         sigmas = torch.cat(
-            [sigmas[:-1] if not force_sigma_min else sigmas, torch.FloatTensor([0.0])]
+            [
+                sigmas[:-1] if not force_sigma_min else sigmas,
+                torch.FloatTensor([0.0]).to(device),
+            ]
         )
         return (sigmas.cpu(),)
 
@@ -412,11 +430,15 @@ class manual_scheduler:
                 break
             sigmas.append(f)
         if error_occurred:
-            # Return a tensor of NaNs to indicate failure
             sigmas = [float("nan")] * steps
         if sgm:
             sigmas = sigmas[:-1]
-        sigmas = torch.tensor(sigmas + [0])
+        device = getattr(
+            model,
+            "device",
+            torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        )
+        sigmas = torch.tensor(sigmas + [0], device=device)
         return (sigmas,)
 
 
