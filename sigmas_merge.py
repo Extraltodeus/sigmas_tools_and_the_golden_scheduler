@@ -158,7 +158,12 @@ class sigmas_to_graph:
     RETURN_TYPES = ("IMAGE",)
     CATEGORY = "sampling/custom_sampling/sigmas"
 
-    def simple_output(self, sigmas, color, print_as_list, scale: GraphScale):
+    def simple_output(self, sigmas, color, print_as_list, scale):
+        # Convert scale string to GraphScale enum
+        if isinstance(scale, str):
+            scale_enum = GraphScale(scale)
+        else:
+            scale_enum = scale
         if print_as_list:
             print(sigmas.tolist())
             sigmas_percentages = (
@@ -168,7 +173,9 @@ class sigmas_to_graph:
                 (i, round(s, 4)) for i, s in enumerate(sigmas_percentages)
             ]
             print(sigmas_percentages_w_steps)
-        sigmas_graph = tensor_to_graph_image(sigmas.cpu(), color=color, scale=scale)
+        sigmas_graph = tensor_to_graph_image(
+            sigmas.cpu(), color=color, scale=scale_enum
+        )
         numpy_image = np.array(sigmas_graph)
         numpy_image = numpy_image / 255.0
         tensor_image = torch.from_numpy(numpy_image)
