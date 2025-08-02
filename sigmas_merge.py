@@ -8,7 +8,7 @@ from asteval import Interpreter
 
 matplotlib.use("Agg")
 from io import BytesIO
-from math import *
+from math import cos, pi, sin, sqrt
 
 import comfy.samplers
 import matplotlib.pyplot as plt
