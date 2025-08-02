@@ -419,6 +419,8 @@ class manual_scheduler:
 
 
 def remap_range_no_clamp(value, minIn, MaxIn, minOut, maxOut):
+    if MaxIn == minIn:
+        return minOut
     finalValue = ((value - minIn) / (MaxIn - minIn)) * (maxOut - minOut) + minOut
     return finalValue
 
