@@ -247,7 +247,8 @@ class the_golden_scheduler:
             "device",
             torch.device("cuda" if torch.cuda.is_available() else "cpu"),
         )
-        sigmas = torch.tensor(sigmas + [0], device=device)
+        dtype = getattr(model, "get_dtype", lambda: torch.float32)()
+        sigmas = torch.tensor(sigmas + [0], device=device, dtype=dtype)
         return (sigmas,)
 
 
@@ -281,7 +282,8 @@ class GaussianTailScheduler:
             "device",
             torch.device("cuda" if torch.cuda.is_available() else "cpu"),
         )
-        sigmas = torch.tensor(sigmas + [0], device=device)
+        dtype = getattr(model, "get_dtype", lambda: torch.float32)()
+        sigmas = torch.tensor(sigmas + [0], device=device, dtype=dtype)
         return (sigmas,)
 
 
@@ -295,7 +297,6 @@ class aligned_scheduler:
             "required": {
                 "model": ("MODEL",),
                 "steps": ("INT", {"default": 10, "min": 1, "max": 10000, "step": 1}),
-                # "scheduler": (comfy.samplers.SCHEDULER_NAMES, {"default":"simple"}),
                 "model_type": (["SD1", "SDXL", "SVD"],),
                 "force_sigma_min": ("BOOLEAN", {"default": False}),
             }
@@ -324,11 +325,12 @@ class aligned_scheduler:
             "device",
             torch.device("cuda" if torch.cuda.is_available() else "cpu"),
         )
-        sigmas = torch.FloatTensor(sigmas).to(device)
+        dtype = getattr(model, "get_dtype", lambda: torch.float32)()
+        sigmas = torch.FloatTensor(sigmas).to(device=device, dtype=dtype)
         sigmas = torch.cat(
             [
                 sigmas[:-1] if not force_sigma_min else sigmas,
-                torch.FloatTensor([0.0]).to(device),
+                torch.FloatTensor([0.0]).to(device=device, dtype=dtype),
             ]
         )
         return (sigmas.cpu(),)
@@ -438,7 +440,8 @@ class manual_scheduler:
             "device",
             torch.device("cuda" if torch.cuda.is_available() else "cpu"),
         )
-        sigmas = torch.tensor(sigmas + [0], device=device)
+        dtype = getattr(model, "get_dtype", lambda: torch.float32)()
+        sigmas = torch.tensor(sigmas + [0], device=device, dtype=dtype)
         return (sigmas,)
 
 
